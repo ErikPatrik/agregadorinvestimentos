@@ -1,8 +1,12 @@
 package tech.buildrun.agregadorinvestimentos.service;
 
+import java.time.Instant;
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 
 import tech.buildrun.agregadorinvestimentos.controller.CreateUserDTO;
+import tech.buildrun.agregadorinvestimentos.entity.User;
 import tech.buildrun.agregadorinvestimentos.repository.UserRepository;
 
 // o que vem do controller para o que vai para o repository
@@ -18,7 +22,20 @@ public class UserService {
     this.userRepository = userRepository;
   }
 
-  public void createUser(CreateUserDTO createUserDTO) {
+  public UUID createUser(CreateUserDTO createUserDTO) {
     // injetando dependencia, dizendo que precisamos de um reposuitory, sem saber o que é
+    // Converte antes o DTO para Entity
+    var entity = new User(
+      UUID.randomUUID(),
+      createUserDTO.username(), 
+      createUserDTO.email(), 
+      createUserDTO.password(),
+      Instant.now(),
+      null
+    );
+
+    var userSaved = userRepository.save(entity);
+
+    return userSaved.getUserId();
   }
 }

@@ -1,5 +1,7 @@
 package tech.buildrun.agregadorinvestimentos.controller;
 
+import java.net.URI;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +25,8 @@ public class UserController {
   
   @PostMapping
   public ResponseEntity<User> createUser(@RequestBody CreateUserDTO createUserDTO) {
-    return null;
+    var userId = userService.createUser(createUserDTO);
+    return ResponseEntity.created(URI.create("/v1/users/" + userId.toString())).build(); // identificar no header o UUID do usuario criado
   }
 
   @GetMapping("{userId}")

@@ -8,17 +8,19 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 
 @Entity
 @Table(name = "tb_users")
 public class User {
+  @Version
+  private Long version;
+
   @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
-  private UUID userId;
+  @Column(name = "user_id", updatable = false, nullable = false)
+  private UUID user_id;
 
   @Column(name = "username")
   private String username;
@@ -37,9 +39,8 @@ public class User {
 
   public User() {}
 
-  public User(UUID userId, String username, String email, String password, Instant createTimestamp,
-      Instant updateTimestamp) {
-    this.userId = userId;
+  public User(UUID user_id, String username, String email, String password, Instant createTimestamp, Instant updateTimestamp) {
+    this.user_id = user_id != null ? user_id : UUID.randomUUID();
     this.username = username;
     this.email = email;
     this.password = password;
@@ -48,11 +49,11 @@ public class User {
   }
 
   public UUID getUserId() {
-    return userId;
+    return user_id;
   }
 
-  public void setUserId(UUID userId) {
-    this.userId = userId;
+  public void setUserId(UUID id) {
+    this.user_id = id;
   }
 
   public String getUsername() {
