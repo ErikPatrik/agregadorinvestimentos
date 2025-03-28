@@ -1,11 +1,15 @@
 package tech.buildrun.agregadorinvestimentos.service;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import tech.buildrun.agregadorinvestimentos.controller.CreateUserDTO;
+import tech.buildrun.agregadorinvestimentos.controller.UpdateUserDTO;
 import tech.buildrun.agregadorinvestimentos.entity.User;
 import tech.buildrun.agregadorinvestimentos.repository.UserRepository;
 
@@ -26,7 +30,7 @@ public class UserService {
     // injetando dependencia, dizendo que precisamos de um reposuitory, sem saber o que é
     // Converte antes o DTO para Entity
     var entity = new User(
-      UUID.randomUUID(),
+      null,
       createUserDTO.username(), 
       createUserDTO.email(), 
       createUserDTO.password(),
@@ -37,5 +41,47 @@ public class UserService {
     var userSaved = userRepository.save(entity);
 
     return userSaved.getUserId();
+  }
+
+  public Optional<User> getUserById(String userId) {
+    return userRepository.findById(UUID.fromString(userId));
+  }
+
+  public List<User> listUsers() {
+    return userRepository.findAll();
+  }
+
+  public void updateUserById(String userId, UpdateUserDTO updateUserDTO) {
+    var id = UUID.fromString(userId);
+    userRepository.existsById(id);
+
+    var userEntity = userRepository.findById(id);
+    
+    if (!userEntity.isPresent()) {
+      return;
+    }
+
+    var user = userEntity.get();
+
+    if (updateUserDTO.username() != null) {
+      user.setUsername(updateUserDTO.username());
+    }
+
+    if (updateUserDTO.password() != null) {
+      user.setPassword(updateUserDTO.password());
+    }
+
+    userRepository.save(user);
+  }
+
+  public void deleteUserById(String userId) {
+    var id = UUID.fromString(userId);
+    var userExists = userRepository.existsById(id);
+    
+    if (!userExists) {
+      return;
+    }
+
+    userRepository.deleteById(id);
   }
 }
